@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/ingredient', function () {
+    return view('ingredient_list');
+});

@@ -15,7 +15,15 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+//載入vue元件
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css' // This line here
+
+
+Vue.use(VueMaterial);
+
+Vue.component('list-container', require('./components/ListContainer.vue'));
 
 const app = new Vue({
     el: '#app'
