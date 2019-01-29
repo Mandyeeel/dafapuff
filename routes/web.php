@@ -18,3 +18,10 @@ Route::get('/', function () {
 Route::get('/ingredient', function () {
     return view('ingredient_list');
 });
+
+Route::get('/ingredient/stock/{id}', 'StockController@show');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+

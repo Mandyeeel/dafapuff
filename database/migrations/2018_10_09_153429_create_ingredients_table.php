@@ -19,7 +19,7 @@ class CreateIngredientsTable extends Migration
             $table->string('unit');
             $table->integer('last_num');
             $table->integer('alert_num');
-            $table->json('brand');
+            $table->text('brand');
             $table->timestamps();
         });
     }
