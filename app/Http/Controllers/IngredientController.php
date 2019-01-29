@@ -26,7 +26,7 @@ class IngredientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function stuck()
     {
         //
     }
@@ -39,7 +39,7 @@ class IngredientController extends Controller
      */
     public function store(Request $request)
     {
-        $ingredient = $request->isMethod('put') ? Article::findOrFail($request->id) : new Ingredient;
+        $ingredient = $request->isMethod('put') ? Ingredient::findOrFail($request->id) : new Ingredient;
 
         $ingredient->id = $request->input('id');
         $ingredient->name = $request->input('name');
@@ -96,6 +96,10 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ingredient = Ingredient::findOrFail($id);
+
+        if($ingredient->delete()) {
+            return new IngredientResource($ingredient);
+        }
     }
 }
