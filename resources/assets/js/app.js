@@ -23,7 +23,9 @@ import 'vue-material/dist/theme/default.css' // This line here
 
 Vue.use(VueMaterial);
 
+Vue.component('admin-basic', require('./components/AdminBasic.vue'));
 Vue.component('list-container', require('./components/ListContainer.vue'));
+Vue.component('stock-list', require('./components/StockList.vue'));
 
 const app = new Vue({
     el: '#app'
