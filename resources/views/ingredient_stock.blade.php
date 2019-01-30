@@ -21,6 +21,8 @@
             last_num="{{ $last_num }}"
             unit="{{ $unit }}"
             stocks="{{ $stocks }}"
+            ingredient="{{ $ingredient }}"
+            brands="{{ $brands }}"
           ></stock-list>
         </div>
     </body>

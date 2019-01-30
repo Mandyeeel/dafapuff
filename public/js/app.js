@@ -72832,17 +72832,21 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(84)
+}
 var normalizeComponent = __webpack_require__(51)
 /* script */
 var __vue_script__ = __webpack_require__(71)
 /* template */
-var __vue_template__ = __webpack_require__(72)
+var __vue_template__ = __webpack_require__(86)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = null
+var __vue_scopeId__ = "data-v-04e07fd4"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -72921,106 +72925,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "md-app",
-    { attrs: { "md-mode": "reveal" } },
-    [
-      _c(
-        "md-app-toolbar",
-        { staticClass: "md-primary" },
-        [
-          _c(
-            "md-button",
-            {
-              staticClass: "md-icon-button",
-              on: {
-                click: function($event) {
-                  _vm.menuVisible = !_vm.menuVisible
-                }
-              }
-            },
-            [_c("md-icon", [_vm._v("menu")])],
-            1
-          ),
-          _vm._v(" "),
-          _c("span", { staticClass: "md-title" }, [_vm._v("原料列表")])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "md-app-drawer",
-        {
-          attrs: { "md-active": _vm.menuVisible },
-          on: {
-            "update:mdActive": function($event) {
-              _vm.menuVisible = $event
-            }
-          }
-        },
-        [
-          _c(
-            "md-toolbar",
-            { staticClass: "md-transparent", attrs: { "md-elevation": "0" } },
-            [_vm._v("分類")]
-          ),
-          _vm._v(" "),
-          _c(
-            "md-list",
-            [
-              _c(
-                "md-list-item",
-                [
-                  _c("md-icon", [_vm._v("local_grocery_store")]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "md-list-item-text" }, [
-                    _vm._v("原料")
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "md-list-item",
-                [
-                  _c("md-icon", [_vm._v("cake")]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "md-list-item-text" }, [
-                    _vm._v("烘焙")
-                  ])
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("md-app-content", [_vm._t("default")], 2)
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-04e07fd4", module.exports)
-  }
-}
-
-/***/ }),
+/* 72 */,
 /* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -90849,6 +90754,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 var toLower = function toLower(text) {
   return text.toString().toLowerCase();
@@ -90866,12 +90778,22 @@ var searchByName = function searchByName(items, term) {
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'TableSearch',
-  props: ['title', 'name', 'last_num', 'unit', 'stocks'],
+  props: ['title', 'name', 'last_num', 'unit', 'stocks', 'ingredient', 'brands'],
   data: function data() {
     return {
       search: null,
       searched: [],
-      selectedDate: new Date(),
+      stock: {
+        ingredient: '',
+        bought_date: new Date(),
+        location: '',
+        bought_num: '',
+        brand: '',
+        price: '',
+        expire_date: new Date()
+      },
+      ingredientBrands: [],
+      edit: false,
       showDialog: false,
       dialogTitle: '新增紀錄'
     };
@@ -90883,12 +90805,54 @@ var searchByName = function searchByName(items, term) {
     searchOnTable: function searchOnTable() {
       this.searched = searchByName(this.users, this.search);
     },
+    fetchStocks: function fetchStocks(page_url) {
+      var _this = this;
+
+      page_url = page_url || '/api/stock';
+      fetch(page_url).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res.data);
+        _this.searched = res.data;
+      }).catch(function (err) {
+        return console.log(err);
+      });
+    },
     addStock: function addStock() {
       this.showDialog = true;
       this.dialogTitle = '新增紀錄';
+    },
+    updateStock: function updateStock() {
+      var _this2 = this;
+
+      if (this.edit === false) {
+        console.log(JSON.stringify(this.stock));
+        fetch('/api/stock', {
+          method: 'post',
+          body: JSON.stringify(this.stock),
+          headers: {
+            'content-type': 'application/json'
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          _this2.stock.bought_date = new Date();
+          _this2.stock.location = '';
+          _this2.stock.bought_num = '';
+          _this2.stock.brand = '';
+          _this2.stock.price = '';
+          _this2.stock.expire_date = new Date();
+          alert('stock added');
+          _this2.fetchStocks();
+        }).catch(function (err) {
+          return console.log(err);
+        });
+      }
     }
   },
   created: function created() {
+    this.stock.ingredient = this.ingredient;
+    this.ingredientBrands = JSON.parse(this.brands);
     this.searched = JSON.parse(this.stocks);
   }
 });
@@ -90919,13 +90883,7 @@ var render = function() {
                   [
                     _c(
                       "md-table-cell",
-                      {
-                        attrs: {
-                          "md-label": "時間",
-                          "md-sort-by": "date",
-                          "md-numeric": ""
-                        }
-                      },
+                      { attrs: { "md-label": "時間", "md-sort-by": "date" } },
                       [_vm._v(_vm._s(item.bought_date))]
                     ),
                     _vm._v(" "),
@@ -90945,13 +90903,25 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "md-table-cell",
-                      { attrs: { "md-label": "數量", "md-sort-by": "number" } },
-                      [_vm._v(_vm._s(item.bought_num))]
+                      {
+                        attrs: {
+                          "md-label": "數量",
+                          "md-sort-by": "number",
+                          "md-numeric": ""
+                        }
+                      },
+                      [_vm._v(_vm._s(item.bought_num) + _vm._s(_vm.unit))]
                     ),
                     _vm._v(" "),
                     _c(
                       "md-table-cell",
-                      { attrs: { "md-label": "金額", "md-sort-by": "price" } },
+                      {
+                        attrs: {
+                          "md-label": "金額",
+                          "md-sort-by": "price",
+                          "md-numeric": ""
+                        }
+                      },
                       [_vm._v(_vm._s(item.price))]
                     ),
                     _vm._v(" "),
@@ -90997,7 +90967,7 @@ var render = function() {
                 },
                 [
                   _c("md-input", {
-                    attrs: { placeholder: "Search by name..." },
+                    attrs: { placeholder: "Search" },
                     on: { input: _vm.searchOnTable },
                     model: {
                       value: _vm.search,
@@ -91074,14 +91044,14 @@ var render = function() {
             {
               attrs: { "md-immediately": "" },
               model: {
-                value: _vm.selectedDate,
+                value: _vm.stock.bought_date,
                 callback: function($$v) {
-                  _vm.selectedDate = $$v
+                  _vm.$set(_vm.stock, "bought_date", $$v)
                 },
-                expression: "selectedDate"
+                expression: "stock.bought_date"
               }
             },
-            [_c("label", [_vm._v("購買時間")])]
+            [_c("label", [_vm._v("購買日")])]
           ),
           _vm._v(" "),
           _c(
@@ -91089,7 +91059,16 @@ var render = function() {
             [
               _c("label", [_vm._v("購買地點")]),
               _vm._v(" "),
-              _c("md-input", { attrs: { required: "" } })
+              _c("md-input", {
+                attrs: { required: "" },
+                model: {
+                  value: _vm.stock.location,
+                  callback: function($$v) {
+                    _vm.$set(_vm.stock, "location", $$v)
+                  },
+                  expression: "stock.location"
+                }
+              })
             ],
             1
           ),
@@ -91099,7 +91078,45 @@ var render = function() {
             [
               _c("label", [_vm._v("品牌")]),
               _vm._v(" "),
-              _c("md-input", { attrs: { required: "" } })
+              _c(
+                "md-select",
+                {
+                  attrs: { name: "brand", id: "brand" },
+                  model: {
+                    value: _vm.stock.brand,
+                    callback: function($$v) {
+                      _vm.$set(_vm.stock, "brand", $$v)
+                    },
+                    expression: "stock.brand"
+                  }
+                },
+                _vm._l(_vm.ingredientBrands, function(brand) {
+                  return _c(
+                    "md-option",
+                    { key: brand, attrs: { value: brand } },
+                    [_vm._v(_vm._s(brand))]
+                  )
+                })
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "md-field",
+            [
+              _c("label", [_vm._v("數量(" + _vm._s(_vm.unit) + ")")]),
+              _vm._v(" "),
+              _c("md-input", {
+                attrs: { required: "" },
+                model: {
+                  value: _vm.stock.bought_num,
+                  callback: function($$v) {
+                    _vm.$set(_vm.stock, "bought_num", $$v)
+                  },
+                  expression: "stock.bought_num"
+                }
+              })
             ],
             1
           ),
@@ -91111,7 +91128,16 @@ var render = function() {
               _vm._v(" "),
               _c("span", { staticClass: "md-prefix" }, [_vm._v("$")]),
               _vm._v(" "),
-              _c("md-input")
+              _c("md-input", {
+                attrs: { required: "" },
+                model: {
+                  value: _vm.stock.price,
+                  callback: function($$v) {
+                    _vm.$set(_vm.stock, "price", $$v)
+                  },
+                  expression: "stock.price"
+                }
+              })
             ],
             1
           ),
@@ -91121,11 +91147,11 @@ var render = function() {
             {
               attrs: { "md-immediately": "" },
               model: {
-                value: _vm.selectedDate,
+                value: _vm.stock.expire_date,
                 callback: function($$v) {
-                  _vm.selectedDate = $$v
+                  _vm.$set(_vm.stock, "expire_date", $$v)
                 },
-                expression: "selectedDate"
+                expression: "stock.expire_date"
               }
             },
             [_c("label", [_vm._v("到期日")])]
@@ -91153,7 +91179,7 @@ var render = function() {
                   staticClass: "md-primary",
                   on: {
                     click: function($event) {
-                      _vm.updateIngredient()
+                      _vm.updateStock()
                     }
                   }
                 },
@@ -91218,6 +91244,146 @@ exports.push([module.i, "\n.md-search-input[data-v-3ea6d6ad] {\n\t\tmax-width: 3
 
 // exports
 
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(85);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(49)("4fac693c", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-04e07fd4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AdminBasic.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-04e07fd4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./AdminBasic.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(3)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.md-app[data-v-04e07fd4] {\n\tmin-height: 100vh;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "md-app",
+    { attrs: { "md-mode": "reveal" } },
+    [
+      _c(
+        "md-app-toolbar",
+        { staticClass: "md-primary" },
+        [
+          _c(
+            "md-button",
+            {
+              staticClass: "md-icon-button",
+              on: {
+                click: function($event) {
+                  _vm.menuVisible = !_vm.menuVisible
+                }
+              }
+            },
+            [_c("md-icon", [_vm._v("menu")])],
+            1
+          ),
+          _vm._v(" "),
+          _c("span", { staticClass: "md-title" }, [_vm._v("原料列表")])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "md-app-drawer",
+        {
+          attrs: { "md-active": _vm.menuVisible },
+          on: {
+            "update:mdActive": function($event) {
+              _vm.menuVisible = $event
+            }
+          }
+        },
+        [
+          _c(
+            "md-toolbar",
+            { staticClass: "md-transparent", attrs: { "md-elevation": "0" } },
+            [_vm._v("分類")]
+          ),
+          _vm._v(" "),
+          _c(
+            "md-list",
+            [
+              _c(
+                "md-list-item",
+                [
+                  _c("md-icon", [_vm._v("local_grocery_store")]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "md-list-item-text" }, [
+                    _vm._v("原料")
+                  ])
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "md-list-item",
+                [
+                  _c("md-icon", [_vm._v("cake")]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "md-list-item-text" }, [
+                    _vm._v("烘焙")
+                  ])
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("md-app-content", [_vm._t("default")], 2)
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-04e07fd4", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
