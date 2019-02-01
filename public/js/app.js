@@ -90761,6 +90761,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 var toLower = function toLower(text) {
   return text.toString().toLowerCase();
@@ -90783,6 +90787,7 @@ var searchByName = function searchByName(items, term) {
     return {
       search: null,
       searched: [],
+      selected: false,
       stock: {
         ingredient: '',
         bought_date: new Date(),
@@ -90848,6 +90853,10 @@ var searchByName = function searchByName(items, term) {
           return console.log(err);
         });
       }
+    },
+    onSelect: function onSelect(item) {
+      //出現項目操作
+      this.selected = item != null;
     }
   },
   created: function created() {
@@ -90872,6 +90881,7 @@ var render = function() {
         "md-table",
         {
           attrs: { "md-sort": "date", "md-sort-order": "desc" },
+          on: { "md-selected": _vm.onSelect },
           scopedSlots: _vm._u([
             {
               key: "md-table-row",
@@ -90879,7 +90889,7 @@ var render = function() {
                 var item = ref.item
                 return _c(
                   "md-table-row",
-                  {},
+                  { attrs: { "md-selectable": "single" } },
                   [
                     _c(
                       "md-table-cell",
@@ -91010,6 +91020,18 @@ var render = function() {
         ],
         1
       ),
+      _vm._v(" "),
+      _vm.selected
+        ? _c(
+            "md-button",
+            {
+              staticClass:
+                "md-fab md-mini md-icon-button md-raised md-accent md-fab-bottom-left"
+            },
+            [_c("md-icon", [_vm._v("delete")])],
+            1
+          )
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "md-button",

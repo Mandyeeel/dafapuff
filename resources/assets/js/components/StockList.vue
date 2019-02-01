@@ -1,6 +1,6 @@
 <template>
 	<admin-basic>
-	    <md-table v-model="searched" md-sort="date" md-sort-order="desc">
+	    <md-table v-model="searched" md-sort="date" md-sort-order="desc" @md-selected="onSelect">
 	      <md-table-toolbar>
 	        <div class="md-toolbar-section-start">
 	          <h1 class="md-title">{{ name }}
@@ -18,7 +18,7 @@
 	        <md-button class="md-primary md-raised" @click="newUser">Create New User</md-button>
 	      </md-table-empty-state>
 
-	      <md-table-row slot="md-table-row" slot-scope="{item}">
+	      <md-table-row slot="md-table-row" slot-scope="{item}" md-selectable="single">
 	        <md-table-cell md-label="時間" md-sort-by="date">{{ item.bought_date }}</md-table-cell>
 	        <md-table-cell md-label="地點" md-sort-by="location">{{ item.bought_location }}</md-table-cell>
 	        <md-table-cell md-label="品牌" md-sort-by="brand">{{ item.brand }}</md-table-cell>
@@ -27,6 +27,10 @@
 	        <md-table-cell md-label="過期日" md-sort-by="expire">{{ item.expire }}</md-table-cell>
 	      </md-table-row>
 	    </md-table>
+			
+			<md-button v-if="selected" class="md-fab md-mini md-icon-button md-raised md-accent md-fab-bottom-left">
+        <md-icon>delete</md-icon>
+      </md-button>
 
 	    <md-button @click="addStock()" class="md-fab md-mini md-primary md-fab-bottom-right">
 	      <md-icon>add</md-icon>
@@ -95,6 +99,7 @@
     data: () => ({
       search: null,
       searched: [],
+      selected: false,
       stock: {
       	ingredient: '',
       	bought_date: new Date(),
@@ -153,6 +158,10 @@
 	      		})
 	      		.catch(err => console.log(err));
       	}
+      },
+      onSelect (item) {
+      	//出現項目操作
+        this.selected = item != null;
       }
     },
     created () {
